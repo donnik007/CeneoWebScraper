@@ -1,7 +1,8 @@
+from re import template
 import requests
 import json
 from bs4 import BeautifulSoup
-from app.utils import extractComponent
+from app.templates.utils import extractComponent
 from app.models.opinion import Opinion
 
 
@@ -15,13 +16,11 @@ class Product:
     def extractProduct(self):
         response = requests.get("https://www.ceneo.pl/{}#tab=reviews".format(self.productId))
         page = 2
-
         while response:
             pageDOM = BeautifulSoup(response.text, 'html.parser')
             opinions = pageDOM.select("div.js_product-review")
             for opinion in opinions:
-                self.opinions.append(Opinion().extractOpinion(opinion))
-
+                self.opinions.append(Opinion().extractOpinion(opinion).transformOpinion())
             response = requests.get("https://www.ceneo.pl/{}/opinie-".format(self.productId)+str(page), allow_redirects=False)
             if response.status_code == 200:
                 page += 1
@@ -29,12 +28,19 @@ class Product:
                 break
 
     def exportProduct(self):
-        with open(f"./opinions/{self.productId}.json", "w", encoding="UTF-8") as f:
-            json.dump(self.opinions, f, indent = 4, ensure_ascii=False)
+        with open(f"app/products/{self.productId}.json", "w", encoding="UTF-8") as f:
+            json.dump(self.toDict(), f, indent = 4, ensure_ascii=False)
         
-    def __dict__(self):
-        pass
+    def toDict(self):
+        return {
+            "productId": self.productId,
+            "productName": self.productName,
+            "opinions": [opinion.toDict() for opinion in self.opinions]
+        }
 
     def __str__(self) -> str:
-        pass
+        return f"productId: {self.productId}<br>productName: {self.productName}<br>opinions<br><br>" + "<br><br>".join(str(opinion) for opinion in self.opinions)
+    
+    def __repr__(self) -> str:
+        return f"Product(productId={self.productId}, productName={self.productName}, opinions=[" + ", ".join(opinion.__repr__() for opinion in self.opinions) + "])"
     

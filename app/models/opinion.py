@@ -1,4 +1,4 @@
-from app.utils import extractComponent
+from app.templates.utils import extractComponent
 
 class Opinion:
     
@@ -34,10 +34,24 @@ class Opinion:
         for key, value in self.components.items():
             setattr(self, key, extractComponent(opinion, *value))
         self.opinionId = opinion["data-entry-id"]
+        return self
 
-    def __dict__(self):
-        pass
+    def transformOpinion(self):
+        self.rcmd = True if self.rcmd == "Polecam" else False if self.rcmd == "Nie polecam" else self.rcmd
+        self.stars = float(self.stars.split("/")[0].replace(",","."))
+        self.content = self.content.replace("\n", " ").replace("\r", " ")
+        self.purchased = bool(self.purchased)
+        self.useful = int(self.useful)
+        self.useless = int(self.useless)
+        return self
+
+    def toDict(self):
+        return {"opinionId": self.opinionId} | {key: getattr(self, key) for key in self.components.keys()}
 
     def __str__(self) -> str:
-        pass
+        return f"opinionId: {self.opinionId}<br>" + "<br>".join(f"{key}: {str(getattr(self, key))}" for key in self.components.keys())
+
+    def __repr__(self) -> str:
+        return f"Opinion(opinionId={self.opinionId}, " + ", ".join(f"{key}={str(getattr(self, key))}" for key in self.components.keys()) + ")"
+        
 
