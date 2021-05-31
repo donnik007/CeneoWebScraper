@@ -1,22 +1,27 @@
 from app import app
 from app.models.product import Product
+from flask import render_template, redirect, url_for
+from os import listdir
+
 
 @app.route('/')
 @app.route('/index')
 def index():
-    return "Hello, World!"
+    return render_template('layout.html.jinja')
 
 @app.route('/extract/<productId>')
 def extract(productId):
     product = Product(productId)
     product.extractProduct()
     product.exportProduct()
-    return str(product)
+    return redirect(url_for('product', productId=productId))
+    #return render_template('extract.html.jinja')
     
 
 @app.route('/products')
 def products():
-    pass
+    products = [product.split('.')[0] for product in listdir("app/products")]
+    return render_template('products.html.jinja',products=products)
 
 @app.route('/about')
 def about():
@@ -24,4 +29,6 @@ def about():
 
 @app.route('/product/<productId>')
 def product(productId):
-    pass
+    product = Product(productId)
+    product.importProduct()
+    return  render_template('product.html.jinja',product=str(product))
