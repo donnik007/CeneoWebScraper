@@ -1,6 +1,17 @@
 {% extends "layout.html.jinja" %}
 
 {% block middle %}
-    <h2>{#{productId}#}</h2>
-    <div>{{product}}</div>
+    <h2>{{productName}}</h2>
+    {# <div>{{ product }}</div> #}
+    <table class="table table-striped" id='opinions'>
+
+    </table>
+    {# {{ table|safe }} #}
 {% endblock middle %}
+{% block scripts %}
+    <script>
+        $(document).ready( function () {
+            $('#opinions').DataTable();
+        } );
+    </script>
+{% endblock scripts %}

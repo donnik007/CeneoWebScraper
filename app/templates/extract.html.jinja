@@ -1,6 +1,17 @@
 {% extends "layout.html.jinja" %}
 
 {% block middle %}
-    <h2>To jest plik extracr</h2>
-    <div>{{ product }}</div>
+    <h2>Pobieranie danych produktu</h2>
+    <p>{{ error }}</p>
+    <form class="row g-3" method="POST">
+        <div class="col-auto">
+            <label for="productId" class="form-control-plaintext">Podaj kod produktu</label>
+        </div>
+        <div class="col-auto">
+            <input type="text" class="form-control" id="productId" name="productId" placeholder="Kod produktu" required>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-3">Pobierz</button>
+        </div>
+    </form>
 {% endblock middle %}

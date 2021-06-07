@@ -1,4 +1,5 @@
 from re import template
+from flask.globals import request
 import requests
 import json
 from bs4 import BeautifulSoup
@@ -11,7 +12,13 @@ class Product:
     def __init__(self, productId, productName = None, opinions = []) -> None:
         self.productId = productId
         self.productName = productName
-        self.opinions = opinions
+        self.opinions = opinions.copy()
+
+    def extractName(self):
+        response = requests.get("https://www.ceneo.pl/{}#tab=reviews".format(self.productId))
+        if response.status_code == requests.codes.ok:
+            pageDOM = BeautifulSoup(response.text, 'html.parser')
+            self.productName = extractComponent(pageDOM, '.js_product-h1-link')
 
     def extractProduct(self):
         response = requests.get("https://www.ceneo.pl/{}#tab=reviews".format(self.productId))
@@ -34,7 +41,7 @@ class Product:
     def importProduct(self):
         with open(f"app/products/{self.productId}.json", "r", encoding="UTF-8") as f:
             product = json.load(f)
-            self.productName = product["productId"]
+            self.productName = product["productName"]
             opinions = product["opinions"]
             for opinion in opinions:
                 self.opinions.append(Opinion(**opinion))
