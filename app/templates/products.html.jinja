@@ -7,14 +7,14 @@
         {% for product in products %}
         
             <li class="list-group-item">
-            <a href="{{ url_for('product', productId=product) }}">{{product[0]}}</a>
+            <a href="{{ url_for('product', productId=product[0]) }}">{{product[0]}}</a>
             <a> | Opinie: {{product[1]}} |</a>
             <a> Wady: {{product[2]}} |</a>
             <a> Zalety: {{product[3]}} |</a>
             <a> Średnia ocena: {{product[4]}} |</a>
-            <button type="button" class="btn btn-secondary" style="float: right;padding: 5px 20px" href="">JSON</button>
-            <button type="button" class="btn btn-secondary" style="float: right;padding: 5px 20px" href="">XML</button>
-            <button type="button" class="btn btn-secondary" style="float: right;padding: 5px 20px" href="">CSV</button>
+            <button type="button" class="btn btn-secondary" style="float: right;padding: 5px 20px" onclick="javascript:location.href='/getJSON/{{product[0]}}'">JSON</button>
+            <button type="button" class="btn btn-secondary" style="float: right;padding: 5px 20px" onclick="javascript:location.href='/getXML/{{product[0]}}'">XML</button>
+            <button type="button" class="btn btn-secondary" style="float: right;padding: 5px 20px" onclick="javascript:location.href='/getCSV/{{product[0]}}'">CSV</button>
             </li>
         {% endfor %}
     </ul>

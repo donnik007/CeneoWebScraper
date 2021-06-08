@@ -1,9 +1,10 @@
 from app import app
 from app.models.product import Product
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, Response, send_file
 from os import listdir
-import os
 import json
+import csv
+import xml.etree.cElementTree as e
 
 
 @app.route('/')
@@ -63,3 +64,61 @@ def product(productId):
     product = Product(productId)
     product.importProduct()
     return  render_template('product.html.jinja',product=str(product), productName=product.productName)
+
+@app.route('/getCSV/<productId>')
+def getCSV(productId):
+    with open(f"app/products/{productId}.json", "r", encoding="UTF-8") as f:
+        csvf = json.load(f)
+    opinions = csvf['opinions']
+
+    fe = csv.writer(open("opinions.csv", "w"))
+    for x in csvf:
+        fe.writerow([x["opinionId"],
+            x["author"],
+            x["rcmd"],
+            x["stars"],
+            x["content"],
+            x["pros"],
+            x["cons"],
+            x["purchased"],
+            x["publishDate"],
+            x["purchaseDate"],
+            x["useful"],
+            x["useless"]])
+
+    path = "C:\\Users\\domin\\Desktop\\Studia\\2SEM\prac_prog2\\CeneoWebScraper\\opinions.csv"
+    return send_file(path, as_attachment=True)
+
+@app.route('/getJSON/<productId>')
+def getJSON(productId):
+    with open(f"app/products/{productId}.json", "r", encoding="UTF-8") as f:
+        producto = json.load(f)
+    return Response(str(producto), mimetype="text/json", headers={"Content-disposition":"attachment; filename=opinions.json"})
+
+@app.route('/getXML/<productId>')
+def getXML(productId):
+    with open(f"app/products/{productId}.json", "r", encoding="UTF-8") as f:
+        producto = json.load(f)
+
+    r = e.Element("Opinions")
+    e.SubElement(r,"productId").text = producto["productId"]
+    e.SubElement(r,"productName").text = producto["productName"]
+    project = e.SubElement(r,"Opinions")
+    for z in producto["opinions"]:
+        e.SubElement(project,"opinionId").text = z["opinionId"]
+        e.SubElement(project,"author").text = z["author"]
+        e.SubElement(project,"rcmd").text = str(z["rcmd"])
+        e.SubElement(project,"stars").text = str(z["stars"])
+        e.SubElement(project,"content").text = str(z["content"])
+        e.SubElement(project,"pros").text = str(z["pros"])
+        e.SubElement(project,"cons").text = str(z["cons"])
+        e.SubElement(project,"purchased").text = str(z["purchased"])
+        e.SubElement(project,"publishDate").text = str(z["publishDate"])
+        e.SubElement(project,"purchaseDate").text = str(z["purchaseDate"])
+        e.SubElement(project,"useful").text = str(z["useful"])
+        e.SubElement(project,"useless").text = str(z["useless"])
+    a = e.ElementTree(r)
+    a.write("opinions.xml")
+    path = "C:\\Users\\domin\\Desktop\\Studia\\2SEM\prac_prog2\\CeneoWebScraper\\opinions.xml"
+    return send_file(path, as_attachment=True)
+    #return Response(, mimetype="text/xml", headers={"Content-disposition":"attachment; filename=opinions.xml"})
