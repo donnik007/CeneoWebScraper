@@ -12,9 +12,11 @@
             <a> Wady: {{product[2]}} |</a>
             <a> Zalety: {{product[3]}} |</a>
             <a> Średnia ocena: {{product[4]}} |</a>
-            <button type="button" class="btn btn-secondary" style="float: right;padding: 5px 20px" onclick="javascript:location.href='/getJSON/{{product[0]}}'">JSON</button>
-            <button type="button" class="btn btn-secondary" style="float: right;padding: 5px 20px" onclick="javascript:location.href='/getXML/{{product[0]}}'">XML</button>
-            <button type="button" class="btn btn-secondary" style="float: right;padding: 5px 20px" onclick="javascript:location.href='/getCSV/{{product[0]}}'">CSV</button>
+            <div class="btn-group" role="group" style="float: right;">
+                <button type="button" class="btn btn-primary" onclick="javascript:location.href='/getJSON/{{product[0]}}'">JSON</button>
+                <button type="button" class="btn btn-primary" onclick="javascript:location.href='/getXML/{{product[0]}}'">XML</button>
+                <button type="button" class="btn btn-primary" onclick="javascript:location.href='/getCSV/{{product[0]}}'">CSV</button>
+            </div>
             </li>
         {% endfor %}
     </ul>

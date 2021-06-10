@@ -1,7 +1,9 @@
 {% extends "layout.html.jinja" %}
 
 {% block middle %}
-    <h2>Pobieranie danych produktu</h2>
+
+    <h2 class="d-flex justify-content-center" >Pobieranie danych produktu</h2>
+    <div class="d-flex justify-content-center">
     <p>{{ error }}</p>
     <form class="row g-3" method="POST">
         <div class="col-auto">
@@ -14,4 +16,5 @@
             <button type="submit" class="btn btn-primary mb-3">Pobierz</button>
         </div>
     </form>
+    </div>
 {% endblock middle %}

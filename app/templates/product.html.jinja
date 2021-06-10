@@ -2,9 +2,44 @@
 
 {% block middle %}
     <h2>{{productName}}</h2>
+    <div class="btn-group-horizontal">
+        <button type="button" class="btn btn-primary btn-lg btn-block" onclick="javascript:location.href='/getJSON/{{productId}}'">JSON</button>
+        <button type="button" class="btn btn-primary btn-lg btn-block" onclick="javascript:location.href='/getXML/{{productId}}'">XML</button>
+        <button type="button" class="btn btn-primary btn-lg btn-block" onclick="javascript:location.href='/getCSV/{{productId}}'">CSV</button>
+        <button type="button" class="btn btn-primary btn-lg btn-block" onclick="javascript:location.href='{{productId}}/wykresy'">Wykresy</button>
+    </div>
+    <br>
     {# <div>{{ product }}</div> #}
-    <table class="table table-striped" id='opinions'>
-         <div>{{ product }}</div>
+    {# <table class="table table-striped" id='opinions'> #}
+    <table id="opinions" class="table table-striped table-bordered table-sm" cellspacing="0">
+        <thead>
+            <tr>
+                <th class="th-sm">opinionId</th>
+                <th class="th-sm">author</th>
+                <th class="th-sm">rcmd</th>
+                <th class="th-sm">stars</th>
+                <th class="th-sm">content</th>
+                <th class="th-sm">pros</th>
+                <th class="th-sm">cons</th>
+                <th class="th-sm">purchased</th>
+                <th class="th-sm">publishDate</th>
+                <th class="th-sm">purchaseDate</th>
+                <th class="th-sm">useful</th>
+                <th class="th-sm">useless</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for opinon in product["opinions"] %}
+                <tr>
+                    {% for each in opinon %}
+                        <td>
+                            {{ opinon[each] }}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            {# <div>{{ product }}</div> #}
+        </tbody>
     </table>
     {# {{ table|safe }} #}
 {% endblock middle %}
@@ -15,3 +50,9 @@
         } );
     </script>
 {% endblock scripts %}
+
+
+
+
+
+
