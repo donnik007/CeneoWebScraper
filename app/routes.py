@@ -5,6 +5,10 @@ from os import listdir
 import json
 import csv
 import xml.etree.cElementTree as e
+import pandas as pd
+from matplotlib import pyplot as plt
+import numpy as np
+import os
 
 
 @app.route('/')
@@ -109,8 +113,9 @@ def getXML(productId):
         e.SubElement(project,"useful").text = str(z["useful"])
         e.SubElement(project,"useless").text = str(z["useless"])
         a = e.ElementTree(r)
-    a.write("opinions.xml")
-    path = "static/opinions.xml"
+    a.write('opinions.xml')
+    
+    path = "app/static/opinions.xml"
     return send_file(path, as_attachment=True)
     
 
@@ -118,5 +123,55 @@ def getXML(productId):
 def wykresy(productId):
     product = Product(productId)
     product.importProduct()
+    x = product.toDict()
+    opinions = x["opinions"]
+    pd.set_option("display.max_columns", None)
+    
+    # pol,npol,niemam = 0,0,0
+    # for each in opinions:
+    #     if each["rcmd"] == True:
+    #         pol += 1
+    #     elif each["rcmd"] == False:
+    #         npol += 1
+    #     else:
+    #         niemam+= 1
+    # labels = 'Polecam', 'Nie polecam', 'Niemam zdania',
+    # sizes = [pol, npol, niemam]
 
-    return render_template('wykresy.html.jinja')
+    # ax1 = plt.plot()
+    # ax1.pie(sizes, labels=labels, colors = ["lightskyblue","crimson","forestgreen"], autopct = "%1.1f%%", pctdistance = 1.2, labeldistance = 1.4)
+    # ax1.axis('equal')
+    # plt.title("udział poszczególnych rekomendacji w ogólnej liczbie opinii")
+    # plt.savefig(f"app/static/chart_rcmd.png", bbox_inches="tight")
+    # plt.close()
+
+    opinions = pd.DataFrame(opinions)
+
+    
+
+    recommendations = opinions.rcmd.value_counts(dropna = False).sort_index()
+    recommendations.plot.pie(
+        label="",
+        colors = ["lightskyblue","crimson","forestgreen"],
+        autopct = "%1.1f%%",
+        pctdistance = 1.2,
+        labeldistance = 1.4
+    )
+    plt.title("Udział poszczególnych rekomendacji w ogólnej liczbie opinii")
+    plt.legend(bbox_to_anchor = (1.0,1.0))
+    plt.savefig(f"app/static/chart_rcmd.png", bbox_inches="tight")
+    plt.close()
+
+     
+    
+    stars = opinions.stars.value_counts().reindex(np.arange(0,5.5,0.5), fill_value=0)
+    stars.plot.barh(color = "lightskyblue")
+    plt.title("Częstość występowania poszczególnych ocen produktu w opiniach")
+    plt.xlabel("Liczba opinii")
+    plt.ylabel("Liczba gwiazdek")
+    plt.savefig(f"app/static/chart_stars.png", bbox_inches="tight")
+    plt.close()
+
+
+
+    return render_template('wykresy.html.jinja',productId = product.productId)
